@@ -1,5 +1,4 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import { redirect, useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -17,8 +16,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUserStore } from '@/stores/user-store'
 import Link from 'next/link'
-import { useMutation } from '@tanstack/react-query'
-import { UserResponse } from '@/types/auth'
 import { useLoginUser } from '@/hooks/auth'
 
 const formSchema = z.object({
@@ -34,7 +31,7 @@ export default function LoginPage() {
   const { user, update } = useUserStore()
   useEffect(() => {
     if (user) {
-      return redirect('/')
+      return redirect('/pomodoro')
     }
   }, [user])
 

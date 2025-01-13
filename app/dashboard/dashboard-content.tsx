@@ -1,5 +1,6 @@
 'use client'
-
+import { useUserStore } from '@/stores/user-store'
+import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { RecentSales } from '@/components/dashboard/recent-sales'
 import { Progress } from '@/components/ui/progress'
@@ -7,8 +8,16 @@ import { StatCard } from '@/components/dashboard/stat-card'
 import { Users, DollarSign, CreditCard, Activity } from 'lucide-react'
 import { LeaderboardList } from '@/components/dashboard/leaderboard-list'
 import { FocusBarChart } from '@/components/dashboard/bar-chart'
+import { useEffect } from 'react'
 
 export default function DashboardContent() {
+  const { user } = useUserStore()
+  const router = useRouter()
+  useEffect(() => {
+    if (!user) {
+      return router.push('/login')
+    }
+  }, [user])
   return (
     <div className='flex-1 space-y-4  pt-6'>
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>

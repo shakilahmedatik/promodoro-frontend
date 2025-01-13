@@ -11,13 +11,17 @@ import {
 import { Spotlight } from '@/components/core/spotlight'
 import { BorderTrail } from '@/components/core/border-trail'
 import { useUserStore } from '@/stores/user-store'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const Pomodoro = () => {
-  // const { user } = useUserStore()
-  // if (!user) {
-  //   return redirect('/login')
-  // }
+  const { user } = useUserStore()
+  const router = useRouter()
+  useEffect(() => {
+    if (!user) {
+      return router.push('/login')
+    }
+  }, [user])
 
   return (
     <div className='space-y-8 flex flex-col justify-center items-center min-h-[calc(100vh-130px)]'>

@@ -10,15 +10,27 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useUserStore } from '@/stores/user-store'
-
+import { logoutUser } from '@/services/api/auth'
+import { useRouter } from 'next/navigation'
 export function Navbar() {
+  const router = useRouter()
   const pathname = usePathname()
-  const { user } = useUserStore()
+  const { user, clearUser } = useUserStore()
+  const handleLogOut = async (): Promise<void> => {
+    console.log('logout')
+    try {
+      await logoutUser()
+      clearUser()
+      router.push('/login')
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <nav className='border-b'>
       <div className='flex h-16 items-center px-4'>
@@ -28,18 +40,20 @@ export function Navbar() {
           </Link>
         </div>
         <div className='ml-auto flex items-center md:space-x-4'>
-          <Button
-            asChild
-            variant='ghost'
-            className={cn(
-              'transition-colors hover:text-primary',
-              pathname === '/pomodoro'
-                ? 'text-primary'
-                : 'text-muted-foreground'
-            )}
-          >
-            <Link href='/pomodoro'>Pomodoro</Link>
-          </Button>
+          {user && (
+            <Button
+              asChild
+              variant='ghost'
+              className={cn(
+                'transition-colors hover:text-primary',
+                pathname === '/pomodoro'
+                  ? 'text-primary'
+                  : 'text-muted-foreground'
+              )}
+            >
+              <Link href='/pomodoro'>Pomodoro</Link>
+            </Button>
+          )}
           <ModeToggle />
           {user ? (
             <DropdownMenu>
@@ -54,7 +68,9 @@ export function Navbar() {
                   <Link href='/dashboard'>Dashboard</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogOut}>
+                  Log out
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
