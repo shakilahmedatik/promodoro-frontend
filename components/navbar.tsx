@@ -45,6 +45,7 @@ export function Navbar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Avatar className='cursor-pointer'>
+                  <AvatarImage src={user?.image} alt='User Photo' />
                   <AvatarFallback>P</AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>

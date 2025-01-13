@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { redirect, useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -17,6 +17,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { useUserStore } from '@/stores/user-store'
 import Link from 'next/link'
+import { useMutation } from '@tanstack/react-query'
+import { UserResponse } from '@/types/auth'
+import { useLoginUser } from '@/hooks/auth'
 
 const formSchema = z.object({
   email: z.string().email({
@@ -28,12 +31,14 @@ const formSchema = z.object({
 })
 
 export default function LoginPage() {
-  const { user } = useUserStore()
-  if (user) {
-    return redirect('/')
-  }
+  const { user, update } = useUserStore()
+  useEffect(() => {
+    if (user) {
+      return redirect('/')
+    }
+  }, [user])
+
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,15 +47,22 @@ export default function LoginPage() {
       password: '',
     },
   })
+  const { mutateAsync, isPending } = useLoginUser()
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
+  const onSubmit = async (
+    values: z.infer<typeof formSchema>
+  ): Promise<void> => {
     // Here you would typically send a request to your server
-    console.log(values)
-    setTimeout(() => {
-      setIsLoading(false)
-      router.push('/')
-    }, 1000)
+
+    try {
+      const { data } = await mutateAsync(values)
+      update(data)
+      setTimeout(() => {
+        router.push('/')
+      }, 1000)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
@@ -93,8 +105,8 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-            <Button type='submit' className='w-full' disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign in'}
+            <Button type='submit' className='w-full' disabled={isPending}>
+              {isPending ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
         </Form>
