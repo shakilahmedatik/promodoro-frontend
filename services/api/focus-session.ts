@@ -20,9 +20,12 @@ export const saveFocusSession = async (
 
 // get focus metrics
 export const getFocusMetrics = async (): Promise<focusSessionMetrics> => {
-  const response = await axios.get(`/focus-metrics`, {
-    withCredentials: true,
-  })
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/focus-metrics`,
+    {
+      withCredentials: true,
+    }
+  )
 
   return response.data.data
 }
