@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from '@/components/navbar'
 import { minecraftFont } from './fonts'
+import TanstackProvider from '@/components/providers/tanstack-provider'
 
 export const metadata: Metadata = {
   title: 'Promodoro | Focus Tracker',
@@ -24,7 +25,7 @@ export default function RootLayout({
           <div className='flex flex-col min-h-screen'>
             <Navbar />
             <main className='flex-grow container mx-auto px-4 py-8'>
-              {children}
+              <TanstackProvider>{children}</TanstackProvider>
             </main>
           </div>
         </ThemeProvider>

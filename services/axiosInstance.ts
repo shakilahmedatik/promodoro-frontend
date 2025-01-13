@@ -33,7 +33,6 @@ const createAxiosInstance = (config: AxiosInstanceConfig): AxiosInstance => {
       return response
     },
     async error => {
-      console.log('hiiiii')
       console.log(error)
       if (
         (error.response && error.response.status === 401) ||
