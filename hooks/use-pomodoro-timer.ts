@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const FOCUS_TIME = 25 * 60 // 25 minutes in seconds
-const BREAK_TIME = 5 * 60 // 5 minutes in seconds
+const FOCUS_TIME = 0.1 * 60 // 25 minutes in seconds
+const BREAK_TIME = 0.05 * 60 // 5 minutes in seconds
 
 interface PomodoroTimer {
   time: string
@@ -36,6 +36,7 @@ export function usePomodoroTimer(): PomodoroTimer {
         setTime(BREAK_TIME)
         setTotalTime(BREAK_TIME)
         setIsBreak(true)
+        console.log('post data in the server')
       }
     }
     return () => clearInterval(intervalId)

@@ -25,11 +25,6 @@ export function PomodoroTimer() {
       <div className='text-6xl lg:text-9xl mb-4'>{time}</div>
       <Progress value={progress} className='w-full h-4 mb-4' />
       <div className='text-xl mb-4'>
-        {/* {isBreak ? (
-          <TextScramble className='text-xl uppercase'>Break Time!</TextScramble>
-        ) : (
-          <TextScramble className='text-xl uppercase'>Focus Time</TextScramble>
-        )} */}
         {isBreak && (
           <TextScramble className='text-xl uppercase'>Break Time!</TextScramble>
         )}
