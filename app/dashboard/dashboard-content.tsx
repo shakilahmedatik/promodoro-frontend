@@ -127,14 +127,16 @@ export default function DashboardContent() {
                 <p>Highest Badge: {highestBadge}</p>
               </div>
               <div className='flex flex-col justify-center items-center'>
-                <Image
-                  src={'/silver-medal-streak.png'}
-                  width={100}
-                  height={100}
-                  className='object-co'
-                  alt='Medal image'
-                />
-                <p>Silver Badge</p>
+                {
+                  <Image
+                    src={`/${currentBadge?.toLowerCase()}-medal-streak.png`}
+                    width={100}
+                    height={100}
+                    className='object-co'
+                    alt='Medal image'
+                  />
+                }
+                <p>{currentBadge} Badge</p>
               </div>
             </div>
             <div> {currentStreak && <StepProgressBar streak={streak} />}</div>
