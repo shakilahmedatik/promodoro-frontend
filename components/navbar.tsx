@@ -16,6 +16,7 @@ import {
 import { useUserStore } from '@/stores/user-store'
 import { logoutUser } from '@/services/api/auth'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 export function Navbar() {
   const router = useRouter()
   const pathname = usePathname()
@@ -25,9 +26,11 @@ export function Navbar() {
     try {
       await logoutUser()
       clearUser()
+      toast.success('Logout Successful!')
       router.push('/login')
     } catch (err) {
       console.log(err)
+      toast.error((err as any)?.response?.data?.message)
     }
   }
 

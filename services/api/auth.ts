@@ -6,7 +6,7 @@ export const registerUser = async (
   data: RegisterUserData
 ): Promise<UserResponse> => {
   const response = await axios.post(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/register`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/user/register`,
     data
   )
   return response.data
