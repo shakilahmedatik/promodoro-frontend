@@ -17,6 +17,7 @@ export function PomodoroTimer() {
     start,
     pause,
     reset,
+    isBtnDisable,
   } = usePomodoroTimer()
   const { theme } = useTheme()
 
@@ -46,6 +47,7 @@ export function PomodoroTimer() {
       <div className='space-x-4 mb-8'>
         <Button
           onClick={isRunning ? pause : start}
+          disabled={isBtnDisable}
           variant={theme === 'dark' ? 'secondary' : 'default'}
         >
           {isRunning ? 'Pause' : cycleCompleted ? 'Start New Cycle' : 'Start'}

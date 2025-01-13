@@ -1,25 +1,64 @@
+import { saveFocusSession } from '@/services/api/focus-session'
 import { useState, useEffect, useCallback } from 'react'
-
+import moment from 'moment'
+import { focusSessionData, PomodoroTimer } from '@/types/focusSession'
+import { useUserStore } from '@/stores/user-store'
+import { useQueryClient } from '@tanstack/react-query'
+import { playSound } from '@/utils/utils'
 const FOCUS_TIME = 0.1 * 60 // 25 minutes in seconds
 const BREAK_TIME = 0.05 * 60 // 5 minutes in seconds
 
-interface PomodoroTimer {
-  time: string
-  isRunning: boolean
-  isBreak: boolean
-  progress: number
-  cycleCompleted: boolean
-  start: () => void
-  pause: () => void
-  reset: () => void
-}
-
 export function usePomodoroTimer(): PomodoroTimer {
+  const { user } = useUserStore()
+  const queryClient = useQueryClient()
   const [time, setTime] = useState(FOCUS_TIME)
   const [isRunning, setIsRunning] = useState(false)
   const [isBreak, setIsBreak] = useState(false)
   const [totalTime, setTotalTime] = useState(FOCUS_TIME)
   const [cycleCompleted, setCycleCompleted] = useState(false)
+  const [isBtnDisable, setIsBtnDisable] = useState(false)
+  // Check if the user is on a mobile device
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent)
+  // Request notification permissions only once on app load
+  useEffect(() => {
+    if (!isMobile && Notification.permission !== 'granted') {
+      Notification.requestPermission()
+    }
+  }, [isMobile])
+
+  const notifyUser = useCallback((): void => {
+    const message = !isBreak
+      ? 'Focus session complete! Starting a 5-minute break.'
+      : 'Break session complete! Ready for the next focus session?'
+
+    // Check if the notification API is available
+    if (Notification.permission === 'granted') {
+      new Notification('Pomodoro Timer', { body: message })
+    }
+
+    // Play sound after user interaction
+    const notificationAudio = new Audio('./notification.mp3')
+    playSound(notificationAudio)
+  }, [isBreak])
+
+  // post data
+  const saveFocusLog = async () => {
+    // Post data to server
+    if (user) {
+      const focusData: focusSessionData = {
+        user_id: user?.id,
+        duration: 25,
+        timestamp: moment().format(),
+      }
+      try {
+        const data = await saveFocusSession(focusData)
+        console.log(data)
+        queryClient.invalidateQueries({ queryKey: ['focus-metrics'] })
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout
@@ -32,19 +71,28 @@ export function usePomodoroTimer(): PomodoroTimer {
         setTotalTime(FOCUS_TIME)
         setIsBreak(false)
         setCycleCompleted(true)
+        notifyUser()
       } else {
         setTime(BREAK_TIME)
         setTotalTime(BREAK_TIME)
         setIsBreak(true)
-        console.log('post data in the server')
+        notifyUser()
+        saveFocusLog()
       }
     }
     return () => clearInterval(intervalId)
   }, [isRunning, time, isBreak])
 
   const start = useCallback(() => {
-    setIsRunning(true)
-    setCycleCompleted(false)
+    setIsBtnDisable(true)
+    // Play sound for 4 seconds before starting the timer
+    const startAudio = new Audio('./start-beeps.mp3')
+    playSound(startAudio)
+    setTimeout(() => {
+      setIsRunning(true)
+      setIsBtnDisable(false)
+      setCycleCompleted(false)
+    }, 4000) // Delay start for 3 seconds
   }, [])
   const pause = useCallback(() => setIsRunning(false), [])
   const reset = useCallback(() => {
@@ -74,5 +122,6 @@ export function usePomodoroTimer(): PomodoroTimer {
     start,
     pause,
     reset,
+    isBtnDisable,
   }
 }

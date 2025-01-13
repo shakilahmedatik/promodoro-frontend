@@ -48,3 +48,16 @@ export interface sessionLog {
   totalSessions: number
   totalDuration: number // in minutes
 }
+
+export interface PomodoroTimer {
+  time: string
+  isRunning: boolean
+  isBreak: boolean
+  progress: number
+  isBtnDisable: boolean
+  cycleCompleted: boolean
+  start: () => void
+  pause: () => void
+  reset: () => void
+}
+export type SessionType = 'focus' | 'break'

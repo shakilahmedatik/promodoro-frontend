@@ -5,44 +5,84 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { RecentSales } from '@/components/dashboard/recent-sales'
 import { Progress } from '@/components/ui/progress'
 import { StatCard } from '@/components/dashboard/stat-card'
-import { Users, DollarSign, CreditCard, Activity } from 'lucide-react'
 import { LeaderboardList } from '@/components/dashboard/leaderboard-list'
 import { FocusBarChart } from '@/components/dashboard/bar-chart'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import StepProgressBar from '@/components/StepProgressBar'
+import {
+  useFocusLogs,
+  useFocusMetrics,
+  useOverallLeaderboard,
+  useTodayLeaderboard,
+} from '@/hooks/focus-sessions'
+import TimeComboChart from '@/components/dashboard/TimeComboChart'
+import Image from 'next/image'
+import LeaderboardByTime from '@/components/dashboard/LeaderboardByTime'
 
 export default function DashboardContent() {
-  const { user } = useUserStore()
-  const router = useRouter()
+  const { data: focusMetrics, isLoading: isFocusMetricsLoading } =
+    useFocusMetrics()
+  const { data: overAllLeaderboard, isLoading: isOverallLeaderboardLoading } =
+    useOverallLeaderboard()
+  const { data: todayLeaderboard, isLoading: isTodayLeaderboardLoading } =
+    useTodayLeaderboard()
+  const { data: sessionLogs, isLoading: isSessionLogsLoading } = useFocusLogs()
+  console.log(
+    isFocusMetricsLoading,
+    isOverallLeaderboardLoading,
+    isTodayLeaderboardLoading,
+    isSessionLogsLoading
+  )
+  const {
+    currentBadge,
+    currentStreak = 0,
+    dailyMetrics,
+    weeklyMetrics,
+    highestBadge,
+    longestStreak,
+  } = focusMetrics || {}
+
+  const [streak, setStreak] = useState(0)
+
+  // Simulate progress animation
   useEffect(() => {
-    if (!user) {
-      return router.push('/login')
-    }
-  }, [user])
+    const timer = setInterval(() => {
+      setStreak(prev => {
+        if (prev >= currentStreak || prev >= 7) {
+          clearInterval(timer)
+          return currentStreak // Stop at the last step
+        }
+        return prev + 1
+      })
+    }, 500) // Increase streak every second
+
+    return () => clearInterval(timer)
+  }, [currentStreak])
   return (
     <div className='flex-1 space-y-4  pt-6'>
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         <StatCard
-          title='Total Revenue'
-          value='$45,231.89'
-          icon={<DollarSign className='h-4 w-4' />}
+          title='Daily Metrics'
+          values={dailyMetrics}
+          image_url='/daily.png'
         />
         <StatCard
-          title='Subscriptions'
-          value='+2350'
-          icon={<Users className='h-4 w-4' />}
+          title='Weekly Metrics'
+          values={weeklyMetrics}
+          image_url='/weekly.png'
         />
         <StatCard
-          title='Sales'
-          value='+12,234'
-          icon={<CreditCard className='h-4 w-4' />}
+          title='Current Streak'
+          value={currentStreak}
+          image_url='/current.png'
         />
         <StatCard
-          title='Active Now'
-          value='+573'
-          icon={<Activity className='h-4 w-4' />}
+          title='Longest Streak'
+          value={longestStreak}
+          image_url='/longest.png'
         />
       </div>
-      <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-7'>
+      {/* <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-7'>
         <Card className='col-span-4'>
           <CardHeader>
             <CardTitle>Chart</CardTitle>
@@ -58,34 +98,72 @@ export default function DashboardContent() {
             <RecentSales />
           </CardContent>
         </Card>
-      </div>
+      </div> */}
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-7'>
-        <Card className='col-span-4'>
+        <Card className='col-span-1 lg:col-span-4'>
           <CardHeader>
-            <CardTitle>Top Performers</CardTitle>
+            <CardTitle className='text-xl font-medium'>
+              Focus Session Log (Last 10 Days.)
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <LeaderboardList title='Sales Leaders' data={salesLeaders} />
+          <CardContent className='pl-2 overflow-hidden'>
+            <div className='w-full h-64 sm:h-96 lg:h-[400px]'>
+              {sessionLogs && <TimeComboChart sessionLogs={sessionLogs} />}
+            </div>
           </CardContent>
         </Card>
-        <Card className='col-span-3'>
+        <Card className='col-span-1 lg:col-span-3'>
           <CardHeader>
-            <CardTitle>Customer Satisfaction</CardTitle>
+            <CardTitle className='text-xl font-medium'>
+              Streak Progress (Consecutive Days.)
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className='flex flex-col justify-between space-y-12'>
+            <div className='flex justify-between  w-full flex-grow'>
+              <div>
+                <p>Current Badge: {currentBadge}</p>
+                <p>You&apos;ve received this badge based on your streak.</p>
+                <p>Highest Badge: {highestBadge}</p>
+              </div>
+              <div className='flex flex-col justify-center items-center'>
+                <Image
+                  src={'/silver-medal-streak.png'}
+                  width={100}
+                  height={100}
+                  className='object-co'
+                  alt='Medal image'
+                />
+                <p>Silver Badge</p>
+              </div>
+            </div>
+            <div> {currentStreak && <StepProgressBar streak={streak} />}</div>
+          </CardContent>
+        </Card>
+      </div>
+      <div className='grid gap-4 md:grid-cols-2'>
+        <Card className=''>
+          <CardHeader>
+            <CardTitle className='text-xl font-medium'>
+              Top Users (Today)
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className='flex flex-col space-y-4'>
-              <div className='space-y-2'>
-                <p className='text-sm font-medium'>Overall Satisfaction</p>
-                <Progress value={87} className='h-2' />
-                <p className='text-sm text-muted-foreground'>
-                  87% of customers are satisfied
-                </p>
-              </div>
-              <LeaderboardList
-                title='Top Rated Products'
-                data={topRatedProducts}
-              />
-            </div>
+            {todayLeaderboard && (
+              <LeaderboardByTime leaderboard={todayLeaderboard} />
+            )}
+          </CardContent>
+        </Card>
+        <Card className=''>
+          <CardHeader>
+            <CardTitle className='text-xl font-medium'>
+              Top Users (Total Focus Time.)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {overAllLeaderboard && (
+              <LeaderboardByTime leaderboard={overAllLeaderboard} />
+            )}
           </CardContent>
         </Card>
       </div>

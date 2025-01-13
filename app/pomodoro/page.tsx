@@ -13,6 +13,10 @@ import { BorderTrail } from '@/components/core/border-trail'
 import { useUserStore } from '@/stores/user-store'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { focusSessionMetrics } from '@/types/focusSession'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
+import { getFocusMetrics } from '@/services/api/focus-session'
+import Link from 'next/link'
 
 const Pomodoro = () => {
   const { user } = useUserStore()
@@ -22,6 +26,13 @@ const Pomodoro = () => {
       return router.push('/login')
     }
   }, [user])
+
+  const { data: focusMetrics }: UseQueryResult<focusSessionMetrics, unknown> =
+    useQuery({
+      enabled: !!user?.id,
+      queryKey: ['focus-metrics', user?.id],
+      queryFn: getFocusMetrics,
+    })
 
   return (
     <div className='space-y-8 flex flex-col justify-center items-center min-h-[calc(100vh-130px)]'>
@@ -59,8 +70,22 @@ const Pomodoro = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <p>Total Focus Time: 2h 30m</p>
-              <p>Completed Pomodoro's: 5</p>
+              {user && user?.id && focusMetrics ? (
+                <>
+                  <p>
+                    Total Focus Time:{' '}
+                    {focusMetrics?.dailyMetrics?.total_time || 0}
+                  </p>
+                  <p>
+                    Completed Pomodoro's: {focusMetrics?.dailyMetrics?.sessions}
+                  </p>
+                </>
+              ) : (
+                <div>
+                  <p>Login To See Daily Focus Metrics.</p>
+                  <Link href='/login'>Login</Link>
+                </div>
+              )}
             </CardContent>
           </Card>
           <BorderTrail
