@@ -36,6 +36,7 @@ const Pomodoro = () => {
     queryKey: ['focus-metrics', user?.id],
     queryFn: getFocusMetrics,
   })
+  console.log(isError)
 
   return (
     <div className='space-y-8 flex flex-col justify-center items-center min-h-[calc(100vh-130px)]'>

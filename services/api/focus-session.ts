@@ -6,6 +6,7 @@ import {
   sessionLog,
 } from '@/types/focusSession'
 import axiosInstance from '../axiosInstance'
+import axios from 'axios'
 
 // save focus session
 export const saveFocusSession = async (
@@ -19,7 +20,7 @@ export const saveFocusSession = async (
 
 // get focus metrics
 export const getFocusMetrics = async (): Promise<focusSessionMetrics> => {
-  const response = await axiosInstance.get(`/focus-metrics`, {
+  const response = await axios.get(`/focus-metrics`, {
     withCredentials: true,
   })
 

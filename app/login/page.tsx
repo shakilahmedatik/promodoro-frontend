@@ -55,7 +55,9 @@ export default function LoginPage() {
       const { data } = await mutateAsync(values)
       update(data)
       toast.success('Login Successful!')
-      router.push('/')
+      setTimeout(() => {
+        router.push('/')
+      }, 1000)
     } catch (err) {
       console.log(err)
       toast.error((err as any)?.response?.data?.message)
