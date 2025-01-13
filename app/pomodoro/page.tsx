@@ -17,6 +17,7 @@ import { focusSessionMetrics } from '@/types/focusSession'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { getFocusMetrics } from '@/services/api/focus-session'
 import Link from 'next/link'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const Pomodoro = () => {
   const { user } = useUserStore()
@@ -81,10 +82,10 @@ const Pomodoro = () => {
                   </p>
                 </>
               ) : (
-                <div>
-                  <p>Login To See Daily Focus Metrics.</p>
-                  <Link href='/login'>Login</Link>
-                </div>
+                <>
+                  <Skeleton className='h-4 w-[180px] mb-2' />
+                  <Skeleton className='h-4 w-[200px]' />
+                </>
               )}
             </CardContent>
           </Card>

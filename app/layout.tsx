@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Navbar } from '@/components/navbar'
 import { minecraftFont } from './fonts'
 import TanstackProvider from '@/components/providers/tanstack-provider'
+import { Toaster } from '@/components/ui/sonner'
 
 export const metadata: Metadata = {
   title: 'Promodoro | Focus Tracker',
@@ -26,6 +27,7 @@ export default function RootLayout({
             <Navbar />
             <main className='flex-grow container mx-auto px-4 py-8'>
               <TanstackProvider>{children}</TanstackProvider>
+              <Toaster />
             </main>
           </div>
         </ThemeProvider>

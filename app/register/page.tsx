@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -17,6 +17,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import Link from 'next/link'
+import { imageUpload } from '@/services/api/image-upload'
+import { useRegisterUser } from '@/hooks/auth'
+import { useUserStore } from '@/stores/user-store'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -32,8 +35,15 @@ const formSchema = z.object({
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, update } = useUserStore()
+  useEffect(() => {
+    if (user) {
+      return router.push('/pomodoro')
+    }
+  }, [user])
+
   const [profileImage, setProfileImage] = useState<string | null>(null)
+  const [imageUrl, setImageUrl] = useState<string>('')
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -43,18 +53,22 @@ export default function RegisterPage() {
       password: '',
     },
   })
+  const { mutateAsync, isPending } = useRegisterUser()
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Here you would typically send a request to your server
-    console.log(values, profileImage)
+    console.log(values, imageUrl)
+    try {
+      await mutateAsync({ ...values, image: imageUrl })
+    } catch (err) {}
     setTimeout(() => {
-      setIsLoading(false)
-      router.push('/dashboard')
+      router.push('/login')
     }, 1000)
   }
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0]
     if (file) {
       const reader = new FileReader()
@@ -62,6 +76,8 @@ export default function RegisterPage() {
         setProfileImage(reader.result as string)
       }
       reader.readAsDataURL(file)
+      const data = await imageUpload(file)
+      setImageUrl(data)
     }
   }
 
@@ -140,8 +156,8 @@ export default function RegisterPage() {
                 </FormItem>
               )}
             />
-            <Button type='submit' className='w-full' disabled={isLoading}>
-              {isLoading ? 'Creating account...' : 'Create account'}
+            <Button type='submit' className='w-full' disabled={isPending}>
+              {isPending ? 'Creating account...' : 'Create account'}
             </Button>
           </form>
         </Form>

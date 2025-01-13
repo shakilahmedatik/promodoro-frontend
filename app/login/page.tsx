@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { redirect, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 import {
   Form,
   FormControl,
@@ -28,14 +29,13 @@ const formSchema = z.object({
 })
 
 export default function LoginPage() {
+  const router = useRouter()
   const { user, update } = useUserStore()
   useEffect(() => {
     if (user) {
-      return redirect('/pomodoro')
+      return router.push('/pomodoro')
     }
   }, [user])
-
-  const router = useRouter()
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -54,6 +54,8 @@ export default function LoginPage() {
     try {
       const { data } = await mutateAsync(values)
       update(data)
+      toast('Login Successful!')
+
       setTimeout(() => {
         router.push('/')
       }, 1000)

@@ -5,8 +5,9 @@ import { focusSessionData, PomodoroTimer } from '@/types/focusSession'
 import { useUserStore } from '@/stores/user-store'
 import { useQueryClient } from '@tanstack/react-query'
 import { playSound } from '@/utils/utils'
-const FOCUS_TIME = 0.1 * 60 // 25 minutes in seconds
-const BREAK_TIME = 0.05 * 60 // 5 minutes in seconds
+import { toast } from 'sonner'
+const FOCUS_TIME = 25 * 60 // 25 minutes in seconds
+const BREAK_TIME = 5 * 60 // 5 minutes in seconds
 
 export function usePomodoroTimer(): PomodoroTimer {
   const { user } = useUserStore()
@@ -53,7 +54,16 @@ export function usePomodoroTimer(): PomodoroTimer {
       try {
         const data = await saveFocusSession(focusData)
         console.log(data)
-        queryClient.invalidateQueries({ queryKey: ['focus-metrics'] })
+        toast('Log Saved!')
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            'focus-metrics',
+            'focus-logs',
+            'leaderboard-overall',
+            'leaderboard-today',
+          ],
+        })
       } catch (err) {
         console.log(err)
       }
