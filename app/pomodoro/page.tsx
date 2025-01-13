@@ -28,12 +28,14 @@ const Pomodoro = () => {
     }
   }, [user])
 
-  const { data: focusMetrics }: UseQueryResult<focusSessionMetrics, unknown> =
-    useQuery({
-      enabled: !!user?.id,
-      queryKey: ['focus-metrics', user?.id],
-      queryFn: getFocusMetrics,
-    })
+  const {
+    data: focusMetrics,
+    isError,
+  }: UseQueryResult<focusSessionMetrics, unknown> = useQuery({
+    enabled: !!user?.id,
+    queryKey: ['focus-metrics', user?.id],
+    queryFn: getFocusMetrics,
+  })
 
   return (
     <div className='space-y-8 flex flex-col justify-center items-center min-h-[calc(100vh-130px)]'>

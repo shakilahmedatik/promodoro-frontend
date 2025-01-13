@@ -54,7 +54,7 @@ export function usePomodoroTimer(): PomodoroTimer {
       try {
         const data = await saveFocusSession(focusData)
         console.log(data)
-        toast('Log Saved!')
+        toast.success('Log Saved!')
 
         queryClient.invalidateQueries({
           queryKey: [
@@ -66,6 +66,7 @@ export function usePomodoroTimer(): PomodoroTimer {
         })
       } catch (err) {
         console.log(err)
+        toast.error((err as any)?.response?.data?.message)
       }
     }
   }

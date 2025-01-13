@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { imageUpload } from '@/services/api/image-upload'
 import { useRegisterUser } from '@/hooks/auth'
 import { useUserStore } from '@/stores/user-store'
+import { toast } from 'sonner'
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -56,14 +57,16 @@ export default function RegisterPage() {
   const { mutateAsync, isPending } = useRegisterUser()
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // Here you would typically send a request to your server
-    console.log(values, imageUrl)
     try {
       await mutateAsync({ ...values, image: imageUrl })
-    } catch (err) {}
-    setTimeout(() => {
-      router.push('/login')
-    }, 1000)
+      toast.success('Registration Successful!, Login Now.')
+      setTimeout(() => {
+        router.push('/login')
+      }, 1000)
+    } catch (err) {
+      console.log(err)
+      toast.error((err as any)?.response?.data?.message)
+    }
   }
 
   const handleImageUpload = async (

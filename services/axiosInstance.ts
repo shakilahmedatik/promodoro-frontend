@@ -35,7 +35,7 @@ const createAxiosInstance = (config: AxiosInstanceConfig): AxiosInstance => {
     async error => {
       console.log(error)
       if (
-        (error.response && error.response.status === 401) ||
+        (error?.response && error.response.status === 401) ||
         error.response.status === 403
       ) {
         await logoutUser()

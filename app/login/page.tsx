@@ -50,17 +50,15 @@ export default function LoginPage() {
     values: z.infer<typeof formSchema>
   ): Promise<void> => {
     // Here you would typically send a request to your server
-
+    console.log('hello')
     try {
       const { data } = await mutateAsync(values)
       update(data)
-      toast('Login Successful!')
-
-      setTimeout(() => {
-        router.push('/')
-      }, 1000)
+      toast.success('Login Successful!')
+      router.push('/')
     } catch (err) {
       console.log(err)
+      toast.error((err as any)?.response?.data?.message)
     }
   }
 
