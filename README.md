@@ -3,11 +3,35 @@
 
 This repository contains the frontend implementation of the Time Management and Focus Tracker app named Promodoro. It provides a user-friendly, responsive interface for tracking study sessions, focus metrics, and gamification elements. Additionally, it includes two leaderboard features to foster competitiveness and motivation among users.
 
+## Live Demo
+
+- ⚠️ Backend of this app is hosted on Render(free tier).
+- ⚠️ On Render's free tier, a service will go to sleep after approximately 15 minutes of inactivity. Please keep that in mind while checking out the live demo down below:
+
+- ‼️ https://promodoro-app-theta.vercel.app/
+
+Demo Credentials:
+```bash
+	•	Admin: admin@example.com / password123
+	•	Student: student@example.com / password123
+```
+
+
 ## Screenshots
 
-![App Screenshot](https://i.ibb.co.com/GdpFKnm/screencapture-promodoro-app-theta-vercel-app-pomodoro-2025-01-13-23-16-40.png)
+![App Screenshot](https://i.ibb.co.com/60ksYZR/promodoro-dark-ui-1.webp)
 
-![Dashboard](https://i.ibb.co.com/rbLD2Jm/screencapture-promodoro-app-theta-vercel-app-dashboard-2025-01-13-23-17-44.png)
+![Dashboard](https://i.ibb.co.com/982TwMJ/promodoro-light-ui-1.webp)
+
+
+## Tech Stack
+
+	•	Framework: Next.js
+	•	State Management: Zustand
+	•	API Management: Tanstack Query & Axios
+	•	Charting Library: Chart.js
+	•	Language: TypeScript
+	•	Styling: Tailwind CSS, Shadcn UI
 
 
 ## Features
@@ -38,16 +62,6 @@ This repository contains the frontend implementation of the Time Management and 
 6. Real-time Updates
 	-	Dynamic timer and leaderboard updates without page refresh.
 
-
-
-## Tech Stack
-
-	•	Framework: Next.js
-	•	State Management: Zustand
-	•	API Management: Tanstack Query & Axios
-	•	Charting Library: Chart.js
-	•	Language: TypeScript
-	•	Styling: Tailwind CSS, Shadcn UI
 
 
 ## Installation
@@ -81,20 +95,11 @@ http://localhost:3000
 
 ## Environment Variables
 
+This prjects requires 2 .env credentials. First one is the api url. Second one is IMGBB API KEY. You can get it from here: https://api.imgbb.com/
+
 Create a .env file in the root directory and provide the following variables:
 
-`NEXT_PUBLIC_API_BASE_URL=<backend-api-url>`
+`NEXT_PUBLIC_API_BASE_URL=https://promodoro-backend.onrender.com/api`
 
 `NEXT_PUBLIC_IMGBB_API_KEY='API_KEY`
-
-
-## Deployment
-
-The application is deployed at: https://promodoro-app-theta.vercel.app/
-
-1. Credentials:
-```bash
-	•	Admin: admin@example.com / password123
-	•	Student: student@example.com / password123
-```
 
